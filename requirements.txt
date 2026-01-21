@@ -1,0 +1,6 @@
+# 项目依赖
+requests==2.31.0
+Pillow==10.1.0
+
+# 打包工具
+pyinstaller==6.0.0
