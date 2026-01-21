@@ -8,6 +8,8 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import tempfile
 
+__version__ = "0.1.1"
+
 class WallpaperHelper:
     def __init__(self, master):
         self.master = master
