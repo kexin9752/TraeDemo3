@@ -2,8 +2,9 @@ import os
 import random
 import ctypes
 import requests
-from tkinter import Tk, Button, Label, Frame, Entry, messagebox
+from tkinter import Tk, Label, Frame, Entry, messagebox
 from tkinter.filedialog import askdirectory
+from tkinter import ttk
 from PIL import Image, ImageTk
 import tempfile
 
@@ -11,8 +12,11 @@ class WallpaperHelper:
     def __init__(self, master):
         self.master = master
         self.master.title("随机壁纸助手")
-        self.master.geometry("400x300")
+        self.master.geometry("450x350")
         self.master.resizable(False, False)
+        
+        # 设置窗口图标和背景色
+        self.master.configure(bg='#f0f0f0')
         
         # 本地壁纸文件夹路径
         self.local_folder = ""
@@ -24,40 +28,57 @@ class WallpaperHelper:
         self.create_ui()
     
     def create_ui(self):
+        # 设置主题样式
+        style = ttk.Style()
+        style.theme_use('clam')  # 使用clam主题，比较现代
+        
+        # 配置样式
+        style.configure('Main.TFrame', background='#f0f0f0')
+        style.configure('Title.TLabel', font=('Helvetica', 18, 'bold'), foreground='#333333', background='#f0f0f0')
+        style.configure('Label.TLabel', font=('Helvetica', 10), foreground='#555555', background='#f0f0f0')
+        style.configure('Status.TLabel', font=('Helvetica', 9), background='#f0f0f0')
+        style.configure('TButton', font=('Helvetica', 10), padding=6)
+        style.configure('TEntry', padding=5, font=('Helvetica', 10))
+        
+        # 设置按钮颜色
+        style.map('TButton', 
+                 background=[('active', '#4a90e2'), ('disabled', '#d9d9d9')],
+                 foreground=[('active', 'white'), ('disabled', '#a0a0a0')])
+        
         # 主框架
-        main_frame = Frame(self.master, padx=20, pady=20)
-        main_frame.pack(fill="both", expand=True)
+        main_frame = ttk.Frame(self.master, style='Main.TFrame')
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
         
         # 标题
-        title_label = Label(main_frame, text="随机壁纸助手", font=("Arial", 16, "bold"))
-        title_label.pack(pady=10)
+        title_label = ttk.Label(main_frame, text="随机壁纸助手", style='Title.TLabel')
+        title_label.pack(pady=20)
         
         # 本地文件夹选择
-        folder_frame = Frame(main_frame)
+        folder_frame = ttk.Frame(main_frame, style='Main.TFrame')
         folder_frame.pack(fill="x", pady=10)
         
-        folder_label = Label(folder_frame, text="本地壁纸文件夹:")
-        folder_label.pack(side="left", padx=5)
+        folder_label = ttk.Label(folder_frame, text="本地壁纸文件夹:", style='Label.TLabel')
+        folder_label.pack(side="left", padx=5, pady=5, anchor='center')
         
-        self.folder_entry = Entry(folder_frame, width=30)
-        self.folder_entry.pack(side="left", padx=5, fill="x", expand=True)
+        self.folder_entry = ttk.Entry(folder_frame, width=30, style='TEntry')
+        self.folder_entry.pack(side="left", padx=5, pady=5, fill="x", expand=True)
         
-        browse_button = Button(folder_frame, text="浏览", command=self.browse_folder)
-        browse_button.pack(side="right", padx=5)
+        browse_button = ttk.Button(folder_frame, text="浏览", command=self.browse_folder, style='TButton')
+        browse_button.pack(side="right", padx=5, pady=5)
         
         # 操作按钮
-        button_frame = Frame(main_frame)
-        button_frame.pack(fill="x", pady=20)
+        button_frame = ttk.Frame(main_frame, style='Main.TFrame')
+        button_frame.pack(fill="x", pady=25)
         
-        local_button = Button(button_frame, text="从本地随机设置", command=self.set_local_wallpaper, width=15)
-        local_button.pack(side="left", padx=10)
+        local_button = ttk.Button(button_frame, text="从本地随机设置", command=self.set_local_wallpaper, width=18, style='TButton')
+        local_button.pack(side="left", padx=15)
         
-        online_button = Button(button_frame, text="从在线随机设置", command=self.set_online_wallpaper, width=15)
-        online_button.pack(side="right", padx=10)
+        online_button = ttk.Button(button_frame, text="从在线随机设置", command=self.set_online_wallpaper, width=18, style='TButton')
+        online_button.pack(side="right", padx=15)
         
         # 状态标签
-        self.status_label = Label(main_frame, text="就绪", fg="green")
-        self.status_label.pack(pady=10)
+        self.status_label = ttk.Label(main_frame, text="就绪", style='Status.TLabel', foreground='green')
+        self.status_label.pack(pady=15)
     
     def browse_folder(self):
         folder = askdirectory(title="选择壁纸文件夹")
@@ -99,10 +120,10 @@ class WallpaperHelper:
                     # 通用Linux命令
                     os.system(f"feh --bg-scale {image_path}")
             
-            self.status_label.config(text="壁纸设置成功！", fg="green")
+            self.status_label.config(text="壁纸设置成功！", foreground="green")
             messagebox.showinfo("成功", "壁纸设置成功！")
         except Exception as e:
-            self.status_label.config(text=f"设置失败: {str(e)}", fg="red")
+            self.status_label.config(text=f"设置失败: {str(e)}", foreground="red")
             messagebox.showerror("错误", f"设置壁纸失败: {str(e)}")
     
     def set_local_wallpaper(self):
@@ -121,13 +142,13 @@ class WallpaperHelper:
             selected_image = random.choice(image_files)
             self.set_wallpaper(selected_image)
         except Exception as e:
-            self.status_label.config(text=f"错误: {str(e)}", fg="red")
+            self.status_label.config(text=f"错误: {str(e)}", foreground="red")
             messagebox.showerror("错误", f"设置本地壁纸失败: {str(e)}")
     
     def set_online_wallpaper(self):
         """从在线随机获取并设置壁纸"""
         try:
-            self.status_label.config(text="正在下载壁纸...", fg="blue")
+            self.status_label.config(text="正在下载壁纸...", foreground="blue")
             self.master.update()
             
             # 下载随机壁纸
@@ -144,7 +165,7 @@ class WallpaperHelper:
             
             # 注意：临时文件不会被自动删除，以便壁纸可以正常显示
         except Exception as e:
-            self.status_label.config(text=f"错误: {str(e)}", fg="red")
+            self.status_label.config(text=f"错误: {str(e)}", foreground="red")
             messagebox.showerror("错误", f"获取在线壁纸失败: {str(e)}")
 
 if __name__ == "__main__":
